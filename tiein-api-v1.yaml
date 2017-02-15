@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Tie-In API
-  description: Move your app forward with the Uber API
+  description: Scrum development application
   version: 1.0.0
 host: tieinservice.herokuapp.com
 schemes:
@@ -193,6 +193,201 @@ paths:
                   properties:
                     id:
                       type: integer
+        '401':
+          description: Permission denied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                description: permission denied
+  /projects:
+    post:
+      summary: Create new project
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: Project name
+          required: true
+          type: string
+        - name: description
+          in: query
+          description: Project description
+          required: true
+          type: string
+        - name: organization_id
+          in: query
+          description: Organization id
+          required: true
+          type: integer
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              project:
+                type: object
+                description: project's properties
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Error paramters as key"
+  /projects/:projectId:
+    get:
+      summary: Project information
+      description: See project information and must have permission
+      tags:
+        - Organization
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: sucess
+          schema:
+            type: object
+            description: project's information with features and effort estimation
+            properties:
+              id:
+                type: integer
+              features:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+              effort_estimations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+        '401':
+          description: Permission denied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                description: permission denied
+  /effort_estimations:
+    post:
+      summary: Create new effort estimation for planning
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+        - name: effort_estimations
+          in: query
+          description: effort_estimation info
+          required: true
+          type: string
+          format: object of project_id, t_factor, e_factor, uucp, developers
+        - name: features
+          in: query
+          description: features information
+          required: true
+          type: string
+          format: array of object [name, complexity]
+        - name: technicals
+          in: query
+          description: technical factors
+          required: true
+          type: string
+          format: object
+        - name: environmentals
+          in: query
+          description: environemntal factors
+          required: true
+          type: string
+          format: object
+      tags:
+        - Effort Estimation
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              project_id:
+                type: integer
+                description: project id
+              t_factor:
+                type: number
+                format: double
+                description: techincal factor value
+              e_factor:
+                type: number
+                format: double
+                description: environmental factor value
+              uucp:
+                type: number
+                format: double
+                description: uucp value
+              use_case_point:
+                type: number
+                format: double
+                description: use case points
+              lower_weeks:
+                type: integer
+                description: minimum weeks used
+              upper_weeks:
+                type: integer
+                description: maximum weeks used
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Error paramters as key"
+  /effort_estimations/:effort_estimationsId:
+    get:
+      summary: See effort estimation
+      description: See effort estimation  and must have permission
+      tags:
+        - Effort Estimation
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: sucess
+          schema:
+            type: object
+            description: effort estimations and others planning
+            properties:
+              effort_estimation:
+                type: object
+              technical_factor:
+                type: object
+              environmental_factor:
+                type: object
+              features:
+                type: object
         '401':
           description: Permission denied
           schema:
