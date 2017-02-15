@@ -1,0 +1,203 @@
+swagger: '2.0'
+info:
+  title: Tie-In API
+  description: Move your app forward with the Uber API
+  version: 1.0.0
+host: tieinservice.herokuapp.com
+schemes:
+  - https
+basePath: /api
+produces:
+  - application/json
+paths:
+  /users:
+    post:
+      summary: User Types
+      description: Create new user (Regist)
+      parameters:
+      - name: email
+        in: query
+        description: User' email
+        required: true
+        type: string
+      - name: password
+        in: query
+        description: User' password
+        required: true
+        type: string
+        format: 8-72 letters
+      - name: password_confirmation
+        in: query
+        description: Password confirmation
+        required: true
+        type: string
+        format: 8-72 letters
+      - name: first_name
+        in: query
+        description: First name
+        required: true
+        type: string
+      - name: last_name
+        in: query
+        description: Last name
+        required: true
+        type: string
+      - name: username
+        in: query
+        description: Username
+        required: true
+        type: string
+      - name: birth_date
+        in: query
+        description: Birth Datte
+        required: true
+        type: string
+        format: (DD/MM/YYYY)
+      - name: phone_number
+        in: query
+        description: Phone number
+        required: true
+        type: string
+      tags:
+        - User
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            description: "User properties with auth_token"
+
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Error paramters as key"
+  /sessions:
+    post:
+      summary: Sessions
+      description: Login
+      parameters:
+        - name: email
+          in: query
+          description: Username or email
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: Longitude component of end location.
+          required: true
+          type: string
+          format: 8-72 letters
+      tags:
+        - Session
+      responses:
+        '200':
+          description: An array of price estimates by product
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              email:
+                type: string
+              username:
+                type: string
+              auth_token:
+                type: string
+              firstname:
+                type: string
+              lastname:
+                type: string
+              birth_date:
+                type: string
+              phone_number:
+                type: string
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Invalid email/username or password"
+  /organizations:
+    post:
+      summary: Organization
+      description: Create organization
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: Organization name
+          required: true
+          type: string
+        - name: description
+          in: query
+          description: Organization description
+          required: true
+          type: string
+      tags:
+        - Organization
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              organization:
+                type: object
+                description: organization's properties with proejects
+              user:
+                type: object
+                description: current user properties with organizations
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Error paramters as key"
+  /organizations/:organizationId:
+    get:
+      summary: Orgnization information
+      description: See organization information and must have permission
+      tags:
+        - Organization
+      parameters:
+        - name: Authentication
+          in: header
+          description: user's auth_token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: sucess
+          schema:
+            type: object
+            description: organization's information with projects
+            properties:
+              id:
+                type: integer
+              projects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+        '401':
+          description: Permission denied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                description: permission denied
