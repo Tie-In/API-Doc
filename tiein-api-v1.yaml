@@ -11,53 +11,72 @@ produces:
   - application/json
 paths:
   /users:
-    post:
-      summary: User Types
-      description: Create new user (Regist)
+    get:
+      summary: Get users
+      tags:
+        - User
       parameters:
-      - name: email
-        in: query
-        description: User' email
-        required: true
-        type: string
-      - name: password
-        in: query
-        description: User' password
-        required: true
-        type: string
-        format: 8-72 letters
-      - name: password_confirmation
-        in: query
-        description: Password confirmation
-        required: true
-        type: string
-        format: 8-72 letters
-      - name: first_name
-        in: query
-        description: First name
-        required: true
-        type: string
-      - name: last_name
-        in: query
-        description: Last name
-        required: true
-        type: string
-      - name: username
-        in: query
-        description: Username
-        required: true
-        type: string
-      - name: birth_date
-        in: query
-        description: Birth Datte
-        required: true
-        type: string
-        format: (DD/MM/YYYY)
-      - name: phone_number
-        in: query
-        description: Phone number
-        required: true
-        type: string
+        - name: organization
+          in: query
+          description: organization id
+          required: true
+          type: number
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                username:
+                  type: string
+                email:
+                  type: string
+        '422':
+          description: Unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: object
+                description: "Error paramters as key"
+    post:
+      summary: Create new user (Regist)
+      parameters:
+        - name: user
+          in: body
+          description: user parameters
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: Username
+              email:
+                type: string
+                description: Password
+              password:
+                type: string
+                description: Password
+              password_confirmation:
+                type: string
+                description: Password confirmation
+              first_name:
+                type: string
+                description: Firstname
+              last_name:
+                type: string
+                description: Lastname
+              phone_number:
+                type: string
+                description: Password
+              birth_date:
+                type: string
+                description: DD/MM/YYYY
       tags:
         - User
       responses:
@@ -80,17 +99,19 @@ paths:
       summary: Sessions
       description: Login
       parameters:
-        - name: email
-          in: query
-          description: Username or email
+        - name: session
+          in: body
+          description: User information
           required: true
-          type: string
-        - name: password
-          in: query
-          description: Longitude component of end location.
-          required: true
-          type: string
-          format: 8-72 letters
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: Username or email
+              password:
+                type: string
+                description: Password
       tags:
         - Session
       responses:
@@ -128,21 +149,31 @@ paths:
       summary: Organization
       description: Create organization
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
           type: string
-        - name: name
-          in: query
-          description: Organization name
+        - name: organization
+          in: body
+          description: Organization information
           required: true
-          type: string
-        - name: description
-          in: query
-          description: Organization description
-          required: true
-          type: string
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Organization name
+              description:
+                type: string
+                description: Organization description
+              users:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
       tags:
         - Organization
       responses:
@@ -172,7 +203,7 @@ paths:
       tags:
         - Organization
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
@@ -205,26 +236,31 @@ paths:
     post:
       summary: Create new project
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
           type: string
-        - name: name
-          in: query
-          description: Project name
+        - name: project
+          in: body
+          description: Project information
           required: true
-          type: string
-        - name: description
-          in: query
-          description: Project description
-          required: true
-          type: string
-        - name: organization_id
-          in: query
-          description: Organization id
-          required: true
-          type: integer
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Project name
+              description:
+                type: string
+                description: Project description
+              users:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
       tags:
         - Project
       responses:
@@ -251,7 +287,7 @@ paths:
       tags:
         - Organization
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
@@ -291,35 +327,39 @@ paths:
     post:
       summary: Create new effort estimation for planning
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
           type: string
-        - name: effort_estimations
+        - name: effort_estimation
+          in: body
+          description: Effort estimation information
+          required: true
+          schema:
+            type: object
+            properties:
+              project_id:
+                type: integer
+                description: Related project id
+              t_factor:
+                type: integer
+                description: Technical factors value
+              e_factor:
+                type: integer
+                description: Technical factors value
+              uucp:
+                type: integer
+                description: UUCP value (from features)
+              developers:
+                type: integer
+                description: Number of developers
+        - name: abcd
           in: query
-          description: effort_estimation info
+          description: user's auth_token
           required: true
           type: string
-          format: object of project_id, t_factor, e_factor, uucp, developers
-        - name: features
-          in: query
-          description: features information
-          required: true
-          type: string
-          format: array of object [name, complexity]
-        - name: technicals
-          in: query
-          description: technical factors
-          required: true
-          type: string
-          format: object
-        - name: environmentals
-          in: query
-          description: environemntal factors
-          required: true
-          type: string
-          format: object
+
       tags:
         - Effort Estimation
       responses:
@@ -368,14 +408,14 @@ paths:
       tags:
         - Effort Estimation
       parameters:
-        - name: Authentication
+        - name: Authorization
           in: header
           description: user's auth_token
           required: true
           type: string
       responses:
         '200':
-          description: sucess
+          description: success
           schema:
             type: object
             description: effort estimations and others planning
