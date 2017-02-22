@@ -285,7 +285,7 @@ paths:
       summary: Project information
       description: See project information and must have permission
       tags:
-        - Organization
+        - Project
       parameters:
         - name: Authorization
           in: header
